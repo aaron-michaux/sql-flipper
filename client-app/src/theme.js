@@ -176,6 +176,42 @@ export const theme = {
         backgroundColor: 'white',
     },
 
+    resultErrorList: {
+        textAlign: 'left',
+        padding: '5px',
+        paddingLeft: '10px',
+        fontFamily: 'muli-regular',
+        fontSize: '20px',
+        color: 'red',
+        background: 'white',
+    },
+
+    resultFeedback: {
+        textAlign: 'left',
+        padding: '5px',
+        paddingLeft: '10px',
+        fontFamily: 'muli-regular',
+        fontSize: '20px',
+        color: '#333',
+        background: 'white',
+    },
+    
+    resultDisplayDiv: {
+        border: 'none',
+        backgroundColor: themeColors.primay,
+    },
+    
+    dataGridCard: {
+        border: 'none',
+        transitionDuration: '0.3s',
+        backgroundColor: themeColors.primay,
+        
+    },
+    
+    dataGrid: {
+        border: 'none',
+        backgroundColor: themeColors.primay
+    },
 };
 
 

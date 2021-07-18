@@ -6,6 +6,9 @@ import styled from '@emotion/styled';
 import LoadingOverlay from 'react-loading-overlay';
 import ScaleLoader from 'react-spinners/ScaleLoader';
 import SplitPane from 'react-split-pane';
+import DataTable from 'react-data-table-component';
+import Card from '@material-ui/core/Card';
+import SortIcon from '@material-ui/icons/ArrowDownward';
 
 /** @jsxRuntime classic */
 /** @jsx jsx */
@@ -16,7 +19,7 @@ import { TablesList } from '../tables-list/TablesList';
 
 import { disconnectDatabaseAsync } from '../db-credentials-dialog/dbCredentialsSlice';
 import { setActiveWindow } from '../main-window/mainWindowSlice';
-import { setSqlQuery } from './queryWindowSlice';
+import { setSqlQuery, executeQueryAsync } from './queryWindowSlice';
 
 function Toolbar(props) {
   const o = useSelector((state) => state.dbCredentials.credentials);
@@ -37,20 +40,17 @@ function SqlTextarea(props) {
 
     // Events
     const onSubmit = (data) => {
-        console.log(data);
         // Don't "double-connect"
-        // if (credentialsPacket.status === 'idle') {
-        //     dispatch(setCredentials(data));
-        //     dispatch(connectDatabaseAsync(data));
-        // }
+        if (queryState.status === 'idle') {
+            dispatch(setSqlQuery(data.sqlText));
+            dispatch(executeQueryAsync(data.sqlText));
+        }
     };
 
     const theme = useTheme();
     const StyledForm = styled.form(theme.sqlForm);
     const ThemedTextarea = styled.textarea(theme.sqlTextarea);
     const FormDiv = styled.div(theme.formDivWrapper);
-
-    //const optimisedHandleChange = debounce(handleChange,500);
     
     return (        
         <StyledForm onSubmit={handleSubmit(onSubmit)}>          
@@ -63,6 +63,79 @@ function SqlTextarea(props) {
                  type="submit"
                  value=""/>
         </StyledForm>
+    );
+}
+
+function QueryFeedback(props) {
+    const theme = useTheme();
+    if(props.data == null) return null;
+    if(props.data?.command == null) return null;
+
+    const rowCount = props.data?.rowCount;
+    
+    const plural = (count) => {
+        return `${count == 1 ? '' : 's'}`;
+    };
+    
+    var message = null;
+    switch(props.data.command) {
+    case 'SELECT':
+        message = null;
+        break;
+    case 'DELETE':
+        message = `Deleted ${rowCount} row${plural(rowCount)}`;
+    case 'UPDATE':
+        message = `Updated ${rowCount} row${plural(rowCount)}`;
+        break;
+    }
+    if(message == null) return null;
+    
+    return (
+        <div css={{ ...theme.resultFeedback }}>{message}</div>
+    );
+};
+
+function DataGrid(props) {
+    const theme = useTheme();
+    
+    // Don't render anything if there's no data
+    if(props.data == null) return null;
+    if(props.data?.fields == null) return null;
+    if(props.data?.rows == null) return null;
+    
+    const columns = props.data.fields.map((field) => {
+        return { name: field, selector: field, sortable: true };
+    });
+    
+    const tableTitle = `SELECT return ${props.data.rows.length} rows`;
+
+    return (
+        <Card css={{ ...theme.dataGridCard }}>
+          <DataTable
+            css={{ ...theme.dataGrid }}
+            noHeader={true}
+            columns={columns}
+            compact={true}
+            data={props.data.rows}
+            defaultSortFieldId={1}
+            sortIcon={<SortIcon />}
+            pagination
+          />
+        </Card>
+    );
+};
+
+function ResultDisplay(props) {
+    const theme = useTheme();
+    const state = props.queryState;
+    const error = (state.error == null) ? null : `ERROR: ${state.error}`;
+    
+    return (
+        <div css={{ ...theme.resultDisplayDiv }}>
+          <ErrorList style="resultErrorList" errors={error} />
+          <QueryFeedback data={state.data} />
+          <DataGrid data={state.data} />
+        </div>              
     );
 }
 
@@ -88,6 +161,8 @@ export function QueryWindow(props) {
             dispatch(setActiveWindow('DbCredentialsDialog'));
         }
     };
+
+    console.log(queryState.error);
     
     return (
         <QueryWindowDiv>
@@ -109,12 +184,12 @@ export function QueryWindow(props) {
               <TablesList />
             </TableColumnDiv>
             <SplitPane split="horizontal"
-                       minSize={200}
+                       minSize={100}
                        defaultSize={vertSplitSize}
                        onDragFinished={(size) => setVertSplitSize(size)}
                        resizerStyle={theme.resizableRow}>
               <SqlTextarea/>
-              <div>Hello</div>
+              <ResultDisplay queryState={queryState} />
             </SplitPane>
           </SplitPane>
         </QueryWindowDiv>

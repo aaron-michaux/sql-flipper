@@ -4,8 +4,6 @@
 const path = require("path");
 const express = require('express');
 const expressSession = require('express-session');
-const redis = require('redis');
-const connectRedis = require('connect-redis');
 const knex = require('knex');
 const cors = require('cors');
 
@@ -13,19 +11,6 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 const dbConn = require('./src/database-functions');
-
-// const RedisStore = connectRedis(expressSession);
-// const redisClient = redis.createClient({
-//     host: 'localhost',
-//     port: 6379
-// });
-
-// redisClient.on('error', function (err) {
-//     console.log('Could not establish a connection with redis. ' + err);
-// });
-// redisClient.on('connect', function (err) {
-//     console.log('Connected to redis successfully');
-// });
 
 // ------------------------------------------------- Cross Origin from Localhost
 
@@ -46,7 +31,6 @@ app.use(cors({
 // ------------------------------------------------------------- Set up Sessions
 // NOTE: We have no session store, so this is a 1-user app
 app.use(express.json());
-//app.use(cookieParser());
 app.use(expressSession({
     secret: 'a-secret!', // We don't have https... ignoring security
     resave: true,
@@ -100,10 +84,18 @@ app.post('/api/disconnect', (req, res) => {
     sendResponse({status: 'complete', error: null});
 });
 
-app.post('/api/tables', (req, res) => {    
+app.post('/api/tables', (req, res) => {
     dbConn.getTables(sessionData.connection, (data) => {
-        console.log(data);
         res.json(data);
+    });
+});
+
+app.post('/api/execute-query', (req, res) => {
+    const rawSql = req.body.sql;
+    dbConn.execSql(sessionData.connection, rawSql, (result) => {
+        result.data = dbConn.convertRawSqlResult(result.data);
+        console.log(result.data);
+        res.json(result);
     });
 });
 
