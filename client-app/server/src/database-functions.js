@@ -70,6 +70,11 @@ function convertRawSqlResult(data)
             command: 'UPDATE',
             rowCount: data.rowCount,
         };
+    case 'INSERT':
+        return {
+            command: 'INSERT',
+            rowCount: data.rowCount,
+        };
     default:
         console.log(`UNKNOWN COMMAND: ${data.command}`);
         return data;

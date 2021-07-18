@@ -85,6 +85,9 @@ function QueryFeedback(props) {
     case 'UPDATE':
         message = `Updated ${rowCount} row${plural(rowCount)}`;
         break;
+    case 'INSERT':
+        message = `Inserted ${rowCount} row${plural(rowCount)}`;
+        break;        
     default:
         message = `Report not supported for SQL query type: ${props.data?.command}`;
         break;
