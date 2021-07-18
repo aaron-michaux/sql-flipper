@@ -17,6 +17,10 @@ code {
     border: black solid 1px;
 }
 
+.exitIcon {
+    background-image: url(icons/exit-iconA.png);
+}
+
 @font-face {
     font-family: muli-regular;
     src: url(fonts/Muli-Regular.ttf);

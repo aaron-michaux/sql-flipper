@@ -1,48 +1,44 @@
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { serverUrl, asyncPost } from './../../lib/post';
 
 const initialState = {
-  credentials: {
-    host: '127.0.0.1',
-    port: 5432,
-    user: 'junibee',
-    password: 'jhPMkLvpST7eQaM5gYUdZlHNqQd3O1',
-    database: 'dvdrental',
-  },
+  currentQuery: '',
+  queryResponse: null,
   status: 'idle',
   error: null
 };
 
-export function fetchCount(amount = 1) {
-  return new Promise((resolve) =>
-    setTimeout(() => resolve({ data: amount }), 500)
-  );
-}
-
-export const connectDatabaseAsync = createAsyncThunk(
-  'DB_CONNECT',
-  async (credentials) => {
-    const response = await axios.post('http://localhost:3001/api/connect', credentials);
-    return response.data;
+export const executeQueryAsync = createAsyncThunk(
+  'EXECUTE_QUERY',
+  async (raw_sql) => {
+    const result = await asyncPost(`${serverUrl}/api/query`,
+      { sql: raw_sql },
+      3000);
+    return (result == null) ? { error: 'Server Unreachable' } : result.data;
   }
 );
 
-export const dbCredentialsSlice = createSlice({
-  name: 'dbCredentials',
+export const queryWindowSlice = createSlice({
+  name: 'queryWindow',
   initialState,
   reducers: {
+    setSqlQuery(state, action) {
+      state.currentQuery = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(connectDatabaseAsync.pending, (state) => {
+      .addCase(executeQueryAsync.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(connectDatabaseAsync.fulfilled, (state, action) => {
+      .addCase(executeQueryAsync.fulfilled, (state, action) => {
         state.status = 'idle';
         state.error = action.payload.error;
       });
   },
 });
 
-export default dbCredentialsSlice.reducer;
+export const { setSqlQuery } = queryWindowSlice.actions;
+
+export default queryWindowSlice.reducer;

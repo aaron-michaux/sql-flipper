@@ -90,6 +90,16 @@ app.post('/api/connect', (req, res) => {
     });
 });
 
+app.post('/api/disconnect', (req, res) => {
+    dbConn.destroy(sessionData.connection); // Clear any existing connection
+    const sendResponse = (data) => {
+        setTimeout(() => {
+            res.json(data);
+        }, 110);
+    };
+    sendResponse({status: 'complete', error: null});
+});
+
 app.post('/api/tables', (req, res) => {    
     dbConn.getTables(sessionData.connection, (data) => {
         console.log(data);

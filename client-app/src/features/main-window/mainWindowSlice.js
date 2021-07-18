@@ -20,6 +20,7 @@ export const appIsLoading = (state) => {
   return state.mainWindow.activeWindow === 'DbCredentialsDialog'
     && state.dbCredentials.status === 'loading';
 };
+
 export const getActiveWindow = (state) => {
   return state.mainWindow.activeWindow;
 };

@@ -11,6 +11,7 @@ import ScaleLoader from 'react-spinners/ScaleLoader';
 import { jsx, useTheme } from '@emotion/react';
 
 import { setActiveWindow } from '../main-window/mainWindowSlice';
+import { setSqlQuery } from '../query-window/queryWindowSlice';
 import { setDbConnectionError } from '../db-credentials-dialog/dbCredentialsSlice';
 import { getTablesState, queryTablesAsync } from './tablesListSlice';
 
@@ -20,10 +21,18 @@ import { setAppStatus } from '../../app/store';
 
 function TableItems(props) {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const ItemDiv = styled.div(theme.tableItem);
   if (props.data == null) return null;
+
+  const onClickTable = (tableName) => {
+    dispatch(setSqlQuery(`SELECT * FROM ${tableName};`));
+  };
+
   return props.data.map((obj) =>
-    (<ItemDiv key={obj.table_name}>{obj.table_name}</ItemDiv>)
+  (<ItemDiv key={obj.table_name} onClick={() => onClickTable(obj.table_name)}>
+    {obj.table_name}
+  </ItemDiv>)
   );
 }
 
@@ -44,6 +53,7 @@ export function TablesList(props) {
       dispatch(setActiveWindow('DbCredentialsDialog'));
     }
   }, [state.data, state.error]);
+
   //
   return (
     <>

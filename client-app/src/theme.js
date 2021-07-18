@@ -83,6 +83,13 @@ export const theme = {
     height: '100%',
   },
 
+  queryWindow: {
+    width: '100%',
+    height: '100vh',
+    position: 'relative',
+    background: '#fff',
+  },
+
   tableHeader: {
     width: '100%',
     fontFamily: 'muli-semibold',
@@ -97,7 +104,34 @@ export const theme = {
     fontSize: '16px',
     margin: '5px 5px',
     color: '#333',
-  }
+    cursor: 'pointer',
+  },
+
+  mainToolbar: {
+    textAlign: 'center',
+    fontSize: '28px',
+    fontFamily: 'muli-regular',
+    padding: '9px',
+    height: '55px',
+    width: '100%',
+    backgroundColor: themeColors.niceGrey,
+    borderBottom: '1px #ddd solid',
+  },
+
+  exitButton: {
+    float: 'right',
+    display: 'inline-block',
+    overflow: 'auto',
+    whiteSpace: 'nowrap',
+    border: 'none',
+    color: 'pink',
+    cursor: 'pointer',
+    width: '48px',
+    height: '48px',
+    margin: 'auto 2px',
+    marginTop: '-52px',
+    backgroundColor: themeColors.niceGrey,
+  },
 };
 
 
