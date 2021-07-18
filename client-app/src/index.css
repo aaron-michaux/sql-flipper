@@ -21,6 +21,10 @@ code {
     background-image: url(icons/exit-iconA.png);
 }
 
+.goIcon {
+    background-image: url(icons/go-iconA.png);
+}
+
 @font-face {
     font-family: muli-regular;
     src: url(fonts/Muli-Regular.ttf);
