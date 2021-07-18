@@ -43,7 +43,6 @@ var sessionData = { connection: null };
 
 app.post('/api/connect', (req, res) => {
     let params = req.body;
-    console.log(params);
     const sendResponse = (data) => {
         setTimeout(() => {
             res.json(data);
