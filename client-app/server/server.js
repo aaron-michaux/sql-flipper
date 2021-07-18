@@ -8,7 +8,7 @@ const knex = require('knex');
 const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 const dbConn = require('./src/database-functions');
 
@@ -28,21 +28,9 @@ app.use(cors({
     }
 }));
 
-// ------------------------------------------------------------- Set up Sessions
+// ---------------------------------------------------------- Serve Static Pages
 // NOTE: We have no session store, so this is a 1-user app
 app.use(express.json());
-app.use(expressSession({
-    secret: 'a-secret!', // We don't have https... ignoring security
-    resave: true,
-    saveUninitialized: true,
-    cookie: {
-        secure: false,  // we got not https!
-        httpOnly: false // true=>prevent client-js from reading cookie
-    }
-}));
-
-// ---------------------------------------------------------- Serve Static Pages
-
 app.use(express.static(`${__dirname}/../build`));
 app.use(express.static('public'));
 
@@ -94,7 +82,6 @@ app.post('/api/execute-query', (req, res) => {
     const rawSql = req.body.sql;
     dbConn.execSql(sessionData.connection, rawSql, (result) => {
         result.data = dbConn.convertRawSqlResult(result.data);
-        console.log(result.data);
         res.json(result);
     });
 });

@@ -3,7 +3,6 @@ function makeNewDatabaseConnection(knex, connectionParams, thunk)
 {
     const connection = knex({
         client: 'pg',
-        debug: true,
         connection: connectionParams
     });
 

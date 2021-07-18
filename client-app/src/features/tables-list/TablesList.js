@@ -1,10 +1,7 @@
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useForm } from 'react-hook-form';
 import styled from '@emotion/styled';
-import LoadingOverlay from 'react-loading-overlay';
-import ScaleLoader from 'react-spinners/ScaleLoader';
 
 /** @jsxRuntime classic */
 /** @jsx jsx */
@@ -14,10 +11,6 @@ import { setActiveWindow } from '../main-window/mainWindowSlice';
 import { setSqlQuery } from '../query-window/queryWindowSlice';
 import { setDbConnectionError } from '../db-credentials-dialog/dbCredentialsSlice';
 import { getTablesState, queryTablesAsync } from './tablesListSlice';
-
-import { ErrorList } from '../error-list/ErrorList';
-
-import { setAppStatus } from '../../app/store';
 
 function TableItems(props) {
   const theme = useTheme();
@@ -52,7 +45,7 @@ export function TablesList(props) {
       dispatch(setDbConnectionError('Query Tables Failed!'));
       dispatch(setActiveWindow('DbCredentialsDialog'));
     }
-  }, [state.data, state.error]);
+  }, [dispatch, state.status, state.data, state.error]);
 
   //
   return (

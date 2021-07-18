@@ -8,7 +8,9 @@ import { jsx, useTheme } from '@emotion/react';
 
 export function ErrorList(props) {
   const theme = useTheme();
-  const ErrorDiv = styled.div(props.style ? theme[props.style] : theme.errorDiv);
+    const ErrorDiv = styled.div(props.styleName
+                                ? theme[props.styleName]
+                                : theme.errorDiv);
 
   const convertToErrorArray = (arg) => {
     if (Array.isArray(arg)) return arg;

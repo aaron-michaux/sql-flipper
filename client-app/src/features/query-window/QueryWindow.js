@@ -1,10 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import styled from '@emotion/styled';
-import LoadingOverlay from 'react-loading-overlay';
-import ScaleLoader from 'react-spinners/ScaleLoader';
 import SplitPane from 'react-split-pane';
 import DataTable from 'react-data-table-component';
 import Card from '@material-ui/core/Card';
@@ -50,7 +48,6 @@ function SqlTextarea(props) {
     const theme = useTheme();
     const StyledForm = styled.form(theme.sqlForm);
     const ThemedTextarea = styled.textarea(theme.sqlTextarea);
-    const FormDiv = styled.div(theme.formDivWrapper);
     
     return (        
         <StyledForm onSubmit={handleSubmit(onSubmit)}>          
@@ -74,7 +71,7 @@ function QueryFeedback(props) {
     const rowCount = props.data?.rowCount;
     
     const plural = (count) => {
-        return `${count == 1 ? '' : 's'}`;
+        return `${count === 1 ? '' : 's'}`;
     };
     
     var message = null;
@@ -84,8 +81,12 @@ function QueryFeedback(props) {
         break;
     case 'DELETE':
         message = `Deleted ${rowCount} row${plural(rowCount)}`;
+        break;
     case 'UPDATE':
         message = `Updated ${rowCount} row${plural(rowCount)}`;
+        break;
+    default:
+        message = `Report not supported for SQL query type: ${props.data?.command}`;
         break;
     }
     if(message == null) return null;
@@ -107,8 +108,6 @@ function DataGrid(props) {
         return { name: field, selector: field, sortable: true };
     });
     
-    const tableTitle = `SELECT return ${props.data.rows.length} rows`;
-
     return (
         <Card css={{ ...theme.dataGridCard }}>
           <DataTable
@@ -132,7 +131,7 @@ function ResultDisplay(props) {
     
     return (
         <div css={{ ...theme.resultDisplayDiv }}>
-          <ErrorList style="resultErrorList" errors={error} />
+          <ErrorList styleName="resultErrorList" errors={error} />
           <QueryFeedback data={state.data} />
           <DataGrid data={state.data} />
         </div>              
@@ -152,17 +151,14 @@ export function QueryWindow(props) {
     const QueryWindowDiv = styled.div(theme.queryWindow);
     const TableColumnDiv = styled.div(theme.tableColumn);
     const DisconnectButton = styled.button(theme.exitButton);
-    const tableColumnMinWidth = 200;
 
     // Events
     const onClickDisconnect = () => {
-        if (dbState.status == 'idle') {
+        if (dbState.status === 'idle') {
             dispatch(disconnectDatabaseAsync());
             dispatch(setActiveWindow('DbCredentialsDialog'));
         }
     };
-
-    console.log(queryState.error);
     
     return (
         <QueryWindowDiv>

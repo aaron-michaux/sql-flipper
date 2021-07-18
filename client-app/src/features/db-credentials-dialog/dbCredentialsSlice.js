@@ -6,9 +6,9 @@ const initialState = {
   credentials: {
     host: '127.0.0.1',
     port: 5432,
-    user: 'junibee',
-    password: 'jhPMkLvpST7eQaM5gYUdZlHNqQd3O1',
-    database: 'dvdrental',
+    user: '',
+    password: '',
+    database: '',
   },
   status: 'idle',
   error: null,

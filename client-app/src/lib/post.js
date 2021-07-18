@@ -1,7 +1,8 @@
 
 import axios from 'axios';
 
-export const serverUrl = 'http://localhost:3001';
+const PORT = process.env.PORT || 3000;
+export const serverUrl = `http://localhost:${PORT}`;
 
 export async function asyncPost(endpoint, data, timeout) {
   let result = null;
