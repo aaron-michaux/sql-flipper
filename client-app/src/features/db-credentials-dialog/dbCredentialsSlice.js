@@ -1,6 +1,6 @@
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { serverUrl, asyncPost } from './../../lib/post';
 
 
 const initialState = {
@@ -16,28 +16,11 @@ const initialState = {
   connected: false,
 };
 
-export async function asyncPost(endpoint, timeout, data) {
-  let result = null;
-  let id = null;
-  await Promise.race([
-    axios.post(endpoint, data),
-    new Promise((resolve, reject) => {
-      id = setTimeout(resolve, timeout, 'Timeout');
-    })
-  ]).then((value) => {
-    result = value;
-  })
-    .finally(() => { clearTimeout(id); });
-
-  return (result === 'Timeout')
-    ? { error: 'Servier Unreachable' }
-    : result.data;
-}
-
 export const connectDatabaseAsync = createAsyncThunk(
   'DB_CONNECT',
   async (credentials) => {
-    return asyncPost('http://localhost:3001/api/connect', 1000, credentials);
+    let result = await asyncPost(`${serverUrl}/api/connect`, credentials, 3000);
+    return (result == null) ? { error: 'Server Unreachable' } : result.data;
   }
 );
 
@@ -47,7 +30,11 @@ export const dbCredentialsSlice = createSlice({
   reducers: {
     setCredentials(state, action) {
       state.credentials = action.payload;
-    }
+    },
+    setDbConnectionError(state, action) {
+      state.error = action.payload;
+      state.connected = (state.error == null);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -57,13 +44,13 @@ export const dbCredentialsSlice = createSlice({
       })
       .addCase(connectDatabaseAsync.fulfilled, (state, action) => {
         state.status = 'idle';
-        state.error = action.payload.error;
+        state.error = action.payload?.error;
         state.connected = (state.error == null);
       });
   },
 });
 
-export const { setCredentials } = dbCredentialsSlice.actions;
+export const { setCredentials, setDbConnectionError } = dbCredentialsSlice.actions;
 
 export const hasDatabaseConnection = (state) => {
   const o = state.dbCredentials;

@@ -3,8 +3,6 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import styled from '@emotion/styled';
-import LoadingOverlay from 'react-loading-overlay';
-import ScaleLoader from 'react-spinners/ScaleLoader';
 
 /** @jsxRuntime classic */
 /** @jsx jsx */
@@ -14,8 +12,6 @@ import { connectDatabaseAsync, hasDatabaseConnection, setCredentials } from './d
 import { setActiveWindow } from '../main-window/mainWindowSlice';
 
 import { ErrorList } from '../error-list/ErrorList';
-
-import { setAppStatus } from '../../app/store';
 
 export function DbCredentialsDialog(props) {
 
@@ -36,12 +32,12 @@ export function DbCredentialsDialog(props) {
   useEffect(() => {
     if (isConnected)
       dispatch(setActiveWindow('QueryWindow'));
-  }, [isConnected]);
+  }, [dispatch, isConnected]);
 
   // Events
   const onSubmit = (data) => {
+    // Don't "double-connect"
     if (credentialsPacket.status === 'idle') {
-      // Don't "double-connect"
       dispatch(setCredentials(data));
       dispatch(connectDatabaseAsync(data));
     }

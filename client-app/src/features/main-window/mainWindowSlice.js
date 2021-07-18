@@ -2,15 +2,15 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  activeWindow: 'DbCredentialsDialog'
+  activeWindow: 'DbCredentialsDialog',
 };
 
 export const mainWindowSlice = createSlice({
   name: 'mainWindow',
   initialState,
   reducers: {
-    setActiveWindow(state, value) {
-      state.activeWindow = value.payload;
+    setActiveWindow(state, action) {
+      state.activeWindow = action.payload;
     }
   },
 });

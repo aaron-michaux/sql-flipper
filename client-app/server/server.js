@@ -4,6 +4,8 @@
 const path = require("path");
 const express = require('express');
 const expressSession = require('express-session');
+const redis = require('redis');
+const connectRedis = require('connect-redis');
 const knex = require('knex');
 const cors = require('cors');
 
@@ -11,6 +13,19 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 const dbConn = require('./src/database-functions');
+
+// const RedisStore = connectRedis(expressSession);
+// const redisClient = redis.createClient({
+//     host: 'localhost',
+//     port: 6379
+// });
+
+// redisClient.on('error', function (err) {
+//     console.log('Could not establish a connection with redis. ' + err);
+// });
+// redisClient.on('connect', function (err) {
+//     console.log('Connected to redis successfully');
+// });
 
 // ------------------------------------------------- Cross Origin from Localhost
 
@@ -31,10 +46,11 @@ app.use(cors({
 // ------------------------------------------------------------- Set up Sessions
 // NOTE: We have no session store, so this is a 1-user app
 app.use(express.json());
+//app.use(cookieParser());
 app.use(expressSession({
     secret: 'a-secret!', // We don't have https... ignoring security
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     cookie: {
         secure: false,  // we got not https!
         httpOnly: false // true=>prevent client-js from reading cookie
@@ -46,32 +62,39 @@ app.use(expressSession({
 app.use(express.static(`${__dirname}/../build`));
 app.use(express.static('public'));
 
+// -------------------------------------------------------------------- Sessions
+// We could have a multi-user system
+// with a sophisticated session store =)
+var sessionData = { connection: null };
+
 // ------------------------------------------------------------------- Endpoints
 
 app.post('/api/connect', (req, res) => {
-    let session = req.session;
     let params = req.body;
     console.log(params);
     const sendResponse = (data) => {
         setTimeout(() => {
             res.json(data);
-        }, 111);
+        }, 110);
     };
     
-    dbConn.destroy(session.connection); // Clear any existing connection
+    dbConn.destroy(sessionData.connection); // Clear any existing connection
     dbConn.connect(knex, params, (connection, err) => {
         if(err) {
             sendResponse({ status: 'complete', error: 'Connection Failed' }); 
         } else {
-            session.connection = connection; // Save the connection for later
+             // Save the connection for later
+            sessionData = { connection: connection };
             sendResponse({ status: 'complete', error: null });            
         }
     });
 });
 
-app.post('/api/tables', (req, res) => {
-    let session = req.session;
-    dbConn.getTables(session.connection, (data) => res.json(data));
+app.post('/api/tables', (req, res) => {    
+    dbConn.getTables(sessionData.connection, (data) => {
+        console.log(data);
+        res.json(data);
+    });
 });
 
 // ---------------------------------------------------------------------- Listen

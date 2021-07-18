@@ -2,6 +2,7 @@
 const themeColors = {
   primary: 'hotpink',
   niceGrey: 'WhiteSmoke',
+  mediumGrey: 'Gainsboro',
 };
 
 
@@ -73,6 +74,30 @@ export const theme = {
     borderRadius: '20px',
     padding: '10px 20px',
   },
+
+  resizableColumn: {
+    background: themeColors.mediumGrey,
+    width: '8px',
+    cursor: 'col-resize',
+    margin: '0px 5px',
+    height: '100%',
+  },
+
+  tableHeader: {
+    width: '100%',
+    fontFamily: 'muli-semibold',
+    fontSize: '24px',
+    color: '#333',
+    marginTop: '6px',
+  },
+
+  tableItem: {
+    textAlign: 'left',
+    fontFamily: 'muli-regular',
+    fontSize: '16px',
+    margin: '5px 5px',
+    color: '#333',
+  }
 };
 
 

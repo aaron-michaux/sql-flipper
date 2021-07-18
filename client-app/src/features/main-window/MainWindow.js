@@ -1,13 +1,12 @@
 
-import { useDispatch, useSelector } from 'react-redux';
-import { useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 import styled from '@emotion/styled';
 import LoadingOverlay from 'react-loading-overlay';
 import ScaleLoader from 'react-spinners/ScaleLoader';
 
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import { jsx, useTheme } from '@emotion/react';
+import { jsx } from '@emotion/react';
 
 import { appIsLoading, getActiveWindow } from './mainWindowSlice';
 
@@ -26,13 +25,10 @@ function WindowSelector(props) {
 };
 
 export function MainWindow(props) {
-  const theme = useTheme();
 
-  const credentialsPacket = useSelector((state) => state.dbCredentials);
   const isLoading = useSelector(appIsLoading);
   const activeWindow = useSelector(getActiveWindow);
   const StyledLoadingOverlay = styled(LoadingOverlay)`width:100%`;
-  const status = credentialsPacket.status;
 
   return (
     <StyledLoadingOverlay
