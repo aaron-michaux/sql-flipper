@@ -8,7 +8,7 @@ const initialState = {
     port: 5432,
     user: '',
     password: '',
-    database: 'l',
+    database: '',
   },
   status: 'idle',
   error: null,
